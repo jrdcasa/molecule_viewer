@@ -1,114 +1,133 @@
 <!doctype html>
-<html>
-	<head>  
-		<meta content="text/html; charset=UTF-8" http-equiv="content-type">
- 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Molecular Viewer</title>
 
-		<title>Molecular Viewer</title>
-	
-		<!-- CSS Style Inline: -->
-		<style type="text/css">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
 
-			body {
-				height: 100%;
-				width: 100%;
-     			margin: 0;
-      			font-family: Arial, sans-serif;
-    		}
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f4f4f4;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-			div.mycontainer {
-				height: 100%;
-				width:100%;
-				overflow:auto;
-			}
-			div.mycontainer div {
-				width:25%;  
-				float:left;
-			}
+    .container {
+      width: 100%;
+      max-width: 900px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
 
-			/* Jmol Applet */
-			/* defines height, width and orientation of the Jmol div element */			
-			#jmol_div{
-				height: 500px;
-				width:  500px;
-				float: left;
-			}
-			
-		</style>
-	
-		<!-- Load Jmol javascript library -->
-		<script type="text/javascript" src="jsmol/JSmol.min.js"></script>
-	
-		<!-- calls to jQuery and Jmol (inline) -->
-		<script type="text/javascript">
-			const baseURL = "mol/";
-			// Jmol readyFunction is called when Jmol is ready
-			jmol_isReady = function(applet) {
-				document.title = (applet._id + " - Jmol " + Jmol.___JmolVersion)
-				Jmol._getElement(applet, "appletdiv").style.border="1px solid blue"
-			}
-	
-			// initialize Jmol Applet
-			var myJmol = "myJmol";
-			var Info = {
-				width:   "100%",
-				height:  "100%",
-				color:   "#ffffff", //black
-				use:     "HTML5",
-				j2sPath: "jsmol/j2s", // this needs to point to where the j2s directory is.
-				jarPath: "jsmol/java",// this needs to point to where the java directory is.
-				jarFile: "JmolAppletSigned.jar",
-				debug:   false,
-				readyFunction: jmol_isReady,
-				script:  'load "mol/caffeine.mol"; wireframe on; spacefill 23%; spin off;', // on-load Jmol script
-		 		allowJavaScript: false,
-				disableJ2SLoadMonitor: true,
-			}
-	
-			// jQuery ready functions
-			// is called when page has been completely loaded
-			$(document).ready(function() {
-				$("#jmol_div").html(Jmol.getAppletHtml(myJmol, Info))
-			})
-			var lastPrompt=0;
+    .jmol-wrapper {
+      width: 100%;
+      max-width: 600px;
+      aspect-ratio: 1 / 1;
+      border: 2px solid #0077cc;
+      background-color: #fff;
+      margin-bottom: 20px;
+    }
 
-			document.addEventListener("DOMContentLoaded", function () {
-				document.getElementById("molSelector").addEventListener("change", function () {
-					const selectedFile = this.value;
-					const loadScript = `load ${baseURL}${selectedFile}; wireframe on; spacefill 23%; spin off;`;
-					Jmol.script(myJmol, loadScript);
-				});
-			});
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      width: 100%;
+    }
 
+    select, button {
+      padding: 10px 15px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      flex: 1 1 150px;
+      max-width: 200px;
+    }
 
+    button:hover, select:hover {
+      background-color: #e6f0ff;
+    }
 
-		</script>
-	
-	</head>
-	<body>
-		
+    label {
+      font-weight: bold;
+      flex-basis: 100%;
+      text-align: center;
+    }
 
-	<div class="mycontainer">
-		<div id='jmol_div'></div>	
-    		<div style="background-color: #ffffff;">
-				<label for="molSelector">Choose a molecule:</label>
-				<select id="molSelector">
-					<option value="caffeine.mol">Caffeine</option>
-					<option value="WIKZUL_VESTA_H1-4-7_phase1.cif">WIKZUL_VESTA_H1-4-7_phase1</option>
-					<option value="WIKZUL01.cif">Molecule WIKZUL01</option>
-				</select>
-      			<button onclick="Jmol.script(myJmol, 'spacefill off')">Atoms Off</button>
-      			<button onclick="Jmol.script(myJmol, 'spacefill 23%')">Atoms 23%</button>
-      			<button onclick="Jmol.script(myJmol, 'spacefill 100%')">Atoms 100%</button>
+    @media (max-width: 500px) {
+      select, button {
+        font-size: 13px;
+        padding: 8px 12px;
+      }
+    }
+  </style>
 
-				<button onclick="Jmol.script(myJmol, 'spin on')">Spin On</button>
-      			<button onclick="Jmol.script(myJmol, 'spin off')">Spin Off</button>
-    		</div>
-	</div>
+  <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
+  <script type="text/javascript">
+    const baseURL = "mol/";
+    var myJmol = "myJmol";
 
-		
+    jmol_isReady = function (applet) {
+      document.title = (applet._id + " - Jmol " + Jmol.___JmolVersion);
+    }
 
-	
-	
-	</body>
+    var Info = {
+      width: "100%",
+      height: "100%",
+      color: "#ffffff",
+      use: "HTML5",
+      j2sPath: "jsmol/j2s",
+      jarPath: "jsmol/java",
+      jarFile: "JmolAppletSigned.jar",
+      debug: false,
+      readyFunction: jmol_isReady,
+      script: 'load "mol/caffeine.mol"; wireframe on; spacefill 23%; spin off;',
+      allowJavaScript: false,
+      disableJ2SLoadMonitor: true,
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+      document.getElementById("jmol_div").innerHTML = Jmol.getAppletHtml(myJmol, Info);
+
+      document.getElementById("molSelector").addEventListener("change", function () {
+        const selectedFile = this.value;
+        const loadScript = `load ${baseURL}${selectedFile}; wireframe on; spacefill 23%; spin off;`;
+        Jmol.script(myJmol, loadScript);
+      });
+    });
+  </script>
+</head>
+<body>
+  <div class="container">
+    <div class="jmol-wrapper" id="jmol_div"></div>
+
+    <div class="controls">
+      <label for="molSelector">Choose a molecule:</label>
+      <select id="molSelector">
+        <option value="caffeine.mol">Caffeine</option>
+        <option value="WIKZUL_VESTA_H1-4-7_phase1.cif">WIKZUL VESTA</option>
+        <option value="WIKZUL01.cif">WIKZUL01</option>
+      </select>
+
+      <button onclick="Jmol.script(myJmol, 'spacefill off')">Atoms Off</button>
+      <button onclick="Jmol.script(myJmol, 'spacefill 23%')">Atoms 23%</button>
+      <button onclick="Jmol.script(myJmol, 'spacefill 100%')">Atoms 100%</button>
+      <button onclick="Jmol.script(myJmol, 'spin on')">Spin On</button>
+      <button onclick="Jmol.script(myJmol, 'spin off')">Spin Off</button>
+    </div>
+  </div>
+</body>
 </html>
