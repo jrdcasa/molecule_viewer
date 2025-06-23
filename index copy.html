@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dual Molecular Viewer</title>
+  <title>Molecular Viewer</title>
 
   <style>
     * {
@@ -13,7 +13,7 @@
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
-      background-color: #ffffff;
+      background-color: #f4f4f4;
       display: flex;
       flex-direction: column;
       align-items: center;
@@ -21,26 +21,20 @@
 
     .container {
       width: 100%;
-      max-width: 1400px;
+      max-width: 900px;
       padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
 
-    .viewers {
-      display: flex;
-      flex-wrap: nowrap;
-      justify-content: center;
-      gap: 20px;
-      width: 100%;
-    }
-
     .jmol-wrapper {
-      width: 75%;
+      width: 100%;
+      max-width: 600px;
       aspect-ratio: 1 / 1;
       border: 2px solid #0077cc;
       background-color: #fff;
+      margin-bottom: 20px;
     }
 
     .controls {
@@ -49,7 +43,6 @@
       gap: 10px;
       justify-content: center;
       width: 100%;
-      margin-top: 20px;
     }
 
     select, button {
@@ -86,10 +79,9 @@
   <script type="text/javascript">
     const baseURL = "mol/";
     var myJmol = "myJmol";
-    var myJmol2 = "myJmol2";
 
     jmol_isReady = function (applet) {
-      document.title = "Jmol Viewer";
+      document.title = (applet._id + " - Jmol " + Jmol.___JmolVersion);
     }
 
     var Info = {
@@ -98,39 +90,43 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/WIKZUL_VESTA_H1-4-7_phase1.cif" {1 1 1}; wireframe on; spacefill 23%; spin off;',
+      jarPath: "jsmol/java",
+      jarFile: "JmolAppletSigned.jar",
+      debug: false,
       readyFunction: jmol_isReady,
-      disableJ2SLoadMonitor: true,
-    };
-
-    var Info2 = {
-      width: "100%",
-      height: "100%",
-      color: "#ffffff",
-      use: "HTML5",
-      j2sPath: "jsmol/j2s",
-      script: 'load "mol/WIKZUL_VESTA_H10-11-12_phase1.cif" {1 1 1}; wireframe on; spacefill 23%; spin off;',
-      readyFunction: jmol_isReady,
+      script: 'load "mol/caffeine.mol"; wireframe on; spacefill 23%; spin off;',
+      allowJavaScript: false,
       disableJ2SLoadMonitor: true,
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
-      document.getElementById("jmol_div2").innerHTML = Jmol.getAppletHtml(myJmol2, Info2);
+      document.getElementById("jmol_div").innerHTML = Jmol.getAppletHtml(myJmol, Info);
+
+      document.getElementById("molSelector").addEventListener("change", function () {
+        const selectedFile = this.value;
+        const loadScript = `load ${baseURL}${selectedFile}; wireframe on; spacefill 23%; spin off;`;
+        Jmol.script(myJmol, loadScript);
+      });
     });
   </script>
 </head>
-
 <body>
   <div class="container">
-    <div class="viewers">
-      <h1>WIKZUL_VESTA_H1-4-7</h1>
-      <h1>WIKZUL_VESTA_H10-12</h1>
+    <div class="jmol-wrapper" id="jmol_div"></div>
 
-    </div>
-    <div class="viewers">
-      <div class="jmol-wrapper" id="jmol_div1"></div>
-      <div class="jmol-wrapper" id="jmol_div2"></div>
+    <div class="controls">
+      <label for="molSelector">Choose a molecule:</label>
+      <select id="molSelector">
+        <option value="caffeine.mol">Caffeine</option>
+        <option value="WIKZUL_VESTA_H1-4-7_phase1.cif">WIKZUL VESTA</option>
+        <option value="WIKZUL01.cif">WIKZUL01</option>
+      </select>
+
+      <button onclick="Jmol.script(myJmol, 'spacefill off')">Atoms Off</button>
+      <button onclick="Jmol.script(myJmol, 'spacefill 23%')">Atoms 23%</button>
+      <button onclick="Jmol.script(myJmol, 'spacefill 100%')">Atoms 100%</button>
+      <button onclick="Jmol.script(myJmol, 'spin on')">Spin On</button>
+      <button onclick="Jmol.script(myJmol, 'spin off')">Spin Off</button>
     </div>
   </div>
 </body>
