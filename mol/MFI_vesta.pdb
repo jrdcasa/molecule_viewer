@@ -1,5 +1,6 @@
 COMPND    MFI
 COMPND   1Created by VESTA
+CRYST1   20.022   19.899   13.383  90.00  90.00  90.00 PNMA
 HETATM    1 Si1                  8.457   1.124   8.887  1.00  0.00          Si
 HETATM    2 Si1                 11.565  18.775   4.496  1.00  0.00          Si
 HETATM    3 Si1                  1.554  18.775   2.195  1.00  0.00          Si

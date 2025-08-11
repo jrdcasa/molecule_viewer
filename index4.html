@@ -109,7 +109,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/MFI_vesta.pdb" {1 1 1}; wireframe on; spacefill 23%; spin off; isosurface ignore(solvent) sasurface; color isosurface yellow translucent; boundbox',
+      script: 'load "mol/MFI_vesta.pdb" {1 1 2}; wireframe on; spacefill 23%; spin off; set solventProbeRadius 0.2; isosurface sasurface; color isosurface yellow translucent; boundbox',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
