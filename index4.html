@@ -87,7 +87,7 @@
     const baseURL = "mol/";
     var myJmol = "myJmol";
     var myJmol2 = "myJmol2";
-    var myJmol2 = "myJmol3";
+    var myJmol3 = "myJmol3";
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
@@ -115,6 +115,18 @@
       disableJ2SLoadMonitor: true,
     };
 
+    var Info3 = {
+      width: "100%",
+      height: "100%",
+      color: "#ffffff",
+      use: "HTML5",
+      j2sPath: "jsmol/j2s",
+      script: 'load "mol/MFI_2_2_2.pdb"; wireframe on; spacefill 23%; spin off; isosurface cavity; color isosurface red translucent; boundbox',
+      readyFunction: jmol_isReady,
+      disableJ2SLoadMonitor: true,
+    };
+
+
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
       document.getElementById("jmol_div2").innerHTML = Jmol.getAppletHtml(myJmol2, Info2);
@@ -128,13 +140,18 @@
     <div class="viewers">
       <h1>MFI {1 1 1}</h1>
       <h1>MFI {2 2 2}</h1>
-      <h1>MFI {2 2 2} Cavity</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
       <div class="jmol-wrapper" id="jmol_div2"></div>
+    </div>
+    <div class="viewers">
+      <h1>MFI {2 2 2} Cavity</h1>
+    </div>
+    <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div3"></div>
     </div>
+
   </div>
 </body>
 </html>
