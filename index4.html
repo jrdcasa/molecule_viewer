@@ -87,6 +87,7 @@
     const baseURL = "mol/";
     var myJmol = "myJmol";
     var myJmol2 = "myJmol2";
+    var myJmol2 = "myJmol3";
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
@@ -117,6 +118,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
       document.getElementById("jmol_div2").innerHTML = Jmol.getAppletHtml(myJmol2, Info2);
+      document.getElementById("jmol_div3").innerHTML = Jmol.getAppletHtml(myJmol3, Info3);
     });
   </script>
 </head>
@@ -124,13 +126,14 @@
 <body>
   <div class="container">
     <div class="viewers">
-      <h1>MFI {1 1 1}AA</h1>
-      <h1>MFI {1 1 2}</h1>
-
+      <h1>MFI {1 1 1}</h1>
+      <h1>MFI {2 2 2}</h1>
+      <h1>MFI {2 2 2} Cavity</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
       <div class="jmol-wrapper" id="jmol_div2"></div>
+      <div class="jmol-wrapper" id="jmol_div3"></div>
     </div>
   </div>
 </body>
