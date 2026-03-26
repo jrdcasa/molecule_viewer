@@ -98,7 +98,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/M_G_ROMe_T.pdb"; wireframe on; spacefill 23%; spin off; boundbox',
+      script: 'load "mol/M_G_ROMe_deoT.pdb"; wireframe on; spacefill 23%; spin off;',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
@@ -109,7 +109,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/MFI_2_2_2.pdb"; wireframe on; spacefill 23%; spin off; set solventProbeRadius 0.2; isosurface sasurface; color isosurface yellow translucent; boundbox',
+      script: 'load "mol/M_G_ROMe_T.pdb"; wireframe on; spacefill 23%; spin off; ',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
@@ -120,7 +120,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/MFI_2_2_2.pdb"; wireframe on; spacefill 23%; spin off; isosurface cavity; color isosurface red translucent; boundbox',
+      script: 'load "mol/M_G_ROMe.pdb"; wireframe on; spacefill 23%; spin off;',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
@@ -129,6 +129,7 @@
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
       document.getElementById("jmol_div2").innerHTML = Jmol.getAppletHtml(myJmol2, Info2);
+      document.getElementById("jmol_div3").innerHTML = Jmol.getAppletHtml(myJmol3, Info3);
     });
   </script>
 </head>
@@ -136,19 +137,21 @@
 <body>
   <div class="container">
     <div class="viewers">
-      <h1>M_H_ROMe_T</h1>
-      <h1>M_H_ROMe</h1>
+      <h1>Initial M_H_ROMe_deoT from GLYCAM</h1>
+      <h1>Initial M_H_ROMe_T   from GLYCAM</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
       <div class="jmol-wrapper" id="jmol_div2"></div>
     </div>
+
     <div class="viewers">
-      <h1>MFI {2 2 2} Cavity</h1>
+      <h1>Initial M_H_ROMe from GLYCAM</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div3"></div>
     </div>
+
 
   </div>
 </body>
