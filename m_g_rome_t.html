@@ -87,7 +87,6 @@
     const baseURL = "mol/";
     var myJmol = "myJmol";
     var myJmol2 = "myJmol2";
-    var myJmol3 = "myJmol3";
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
@@ -99,7 +98,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/MFI_vesta.pdb"; wireframe on; spacefill 23%; spin off; boundbox',
+      script: 'load "mol/M_G_ROMe_T.pdb"; wireframe on; spacefill 23%; spin off; boundbox',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
@@ -130,7 +129,6 @@
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
       document.getElementById("jmol_div2").innerHTML = Jmol.getAppletHtml(myJmol2, Info2);
-      document.getElementById("jmol_div3").innerHTML = Jmol.getAppletHtml(myJmol3, Info3);
     });
   </script>
 </head>
@@ -138,8 +136,8 @@
 <body>
   <div class="container">
     <div class="viewers">
-      <h1>MFI {1 1 1}</h1>
-      <h1>MFI {2 2 2}</h1>
+      <h1>M_H_ROMe_T</h1>
+      <h1>M_H_ROMe</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
