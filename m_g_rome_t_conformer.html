@@ -97,9 +97,37 @@
       spacefill 0.28;
       color [0,150,255];
 
+
+      # GLC (45–64 23 → 46–65 24)
+      select (atomno >=46 and atomno <=65) or atomno=24;
+      wireframe 0.06;
+      color yellow;
+
+      # RAP (0–22 → 1–23)
+      select atomno >=1 and atomno <=23;
+      wireframe 0.06;
+      color red;
+
+      # TAL (24–44 → 25–45)
+      select atomno >=25 and atomno <=45;
+      wireframe 0.06;
+      color green;
       
-      
-      
+      select hydrogen;
+      spacefill 0.18;
+      wireframe 0.05;
+
+      # recalcular conectividad
+      connect delete;
+      connect auto;
+
+      # H bonds
+      set hbondsAngleMinimum 30;
+      set hbondsDistanceMaximum 3.2;
+      calculate hbonds;
+      color hbonds red;
+      set hbondsSolid false;
+      hbonds 0.12;
     `;
 
     var Info = {
@@ -125,7 +153,7 @@
 
     <!-- Title -->
     <div class="viewers">
-      <h1>Initiallll M_G_ROMe_deoT CONFORMERS</h1>
+      <h1>Initial M_G_ROMe_deoT CONFORMERS</h1>
     </div>
 
     <!-- Viewer -->
