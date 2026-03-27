@@ -35,6 +35,33 @@
       border: 2px solid #0077cc;
       background-color: #fff;
     }
+    .legend {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fafafa;
+      min-width: 130px;
+      align-self: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    .legend-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
     .frame-controls {
       display: flex;
       flex-wrap: wrap;
@@ -227,11 +254,22 @@
       document.getElementById("frameInfo").textContent = "Frame 1 / " + n;
     }
 
+    // ── Script de H-bonds (se repite tras cada cambio de frame) ───────────
+    const hbond_script = `
+      set hbondsAngleMinimum 60;
+      set hbondsDistanceMaximum 3.0;
+      calculate hbonds;
+      color hbonds black;
+      set hbondsSolid false;
+      hbonds 0.25;
+    `;
+
     // ── Navegar a un frame concreto ────────────────────────────────────────
     function goToFrame(n) {
       if (!appletRef) return;
       n = Math.max(1, Math.min(n, totalFrames));
-      Jmol.script(appletRef, "frame " + n + "; set hbondsAngleMinimum 60; set hbondsDistanceMaximum 3.0; calculate hbonds; color hbonds black; set hbondsSolid false; hbonds 0.25;");
+      // Cambiar frame y recalcular H-bonds en un solo script
+      Jmol.script(appletRef, "frame " + n + "; " + hbond_script);
       currentFrame = n;
       document.getElementById("frameSlider").value = n;
       document.getElementById("frameInfo").textContent =
@@ -284,9 +322,27 @@
       <h1>Initial M_G_ROMe_deoT CONFORMERS</h1>
     </div>
 
-    <!-- Visor -->
-    <div class="viewers">
+    <!-- Visor + Leyenda -->
+    <div class="viewers" style="align-items: center;">
       <div class="jmol-wrapper" id="jmol_div1"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(0,150,255);"></div>
+          <span>Manose</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(255,210,0);"></div>
+          <span>Glucose</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(220,50,50);"></div>
+          <span>RAP</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(50,180,50);"></div>
+          <span>TAL</span>
+        </div>
+      </div>
     </div>
 
     <!-- Controles de frame -->
