@@ -4,12 +4,10 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Dual Molecular Viewer</title>
-
   <style>
     * {
       box-sizing: border-box;
     }
-
     body {
       margin: 0;
       font-family: 'Segoe UI', sans-serif;
@@ -18,7 +16,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .container {
       width: 100%;
       max-width: 1400px;
@@ -27,7 +24,6 @@
       flex-direction: column;
       align-items: center;
     }
-
     .viewers {
       display: flex;
       flex-wrap: nowrap;
@@ -35,14 +31,12 @@
       gap: 20px;
       width: 100%;
     }
-
     .jmol-wrapper {
       width: 75%;
       aspect-ratio: 1 / 1;
       border: 2px solid #0077cc;
       background-color: #fff;
     }
-
     .controls {
       display: flex;
       flex-wrap: wrap;
@@ -51,7 +45,6 @@
       width: 100%;
       margin-top: 20px;
     }
-
     select, button {
       padding: 10px 15px;
       font-size: 14px;
@@ -63,17 +56,14 @@
       flex: 1 1 150px;
       max-width: 200px;
     }
-
     button:hover, select:hover {
       background-color: #e6f0ff;
     }
-
     label {
       font-weight: bold;
       flex-basis: 100%;
       text-align: center;
     }
-
     @media (max-width: 500px) {
       select, button {
         font-size: 13px;
@@ -81,23 +71,24 @@
       }
     }
   </style>
-
   <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
   <script type="text/javascript">
-    const baseURL = "mol/";
     var myJmol = "myJmol";
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
-    }
+    };
 
     const style_script = `
-     background white;
-     set axes off;
-     set perspectiveDepth off;
-     wireframe off;
-     spacefill off;
-    ` 
+      background white;
+      set axes off;
+      set perspectiveDepth off;
+      wireframe off;
+      spacefill off;
+      cpk off;
+      wireframe 0.15;
+      cpk 25%;
+    `;
 
     var Info = {
       width: "100%",
@@ -113,31 +104,98 @@
     document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
     });
+
+    // ── Control functions ──────────────────────────────────────────────────────
+
+    function setStyle(style) {
+      var script = "";
+      switch (style) {
+        case "ball_stick":
+          script = "wireframe 0.15; cpk 25%;";
+          break;
+        case "spacefill":
+          script = "wireframe off; cpk on;";
+          break;
+        case "wireframe":
+          script = "wireframe 0.1; cpk off;";
+          break;
+        case "stick":
+          script = "wireframe 0.2; cpk off;";
+          break;
+      }
+      Jmol.script(window[myJmol], script);
+    }
+
+    function setColor(scheme) {
+      var script = "";
+      switch (scheme) {
+        case "cpk":
+          script = "color cpk;";
+          break;
+        case "chain":
+          script = "color chain;";
+          break;
+        case "structure":
+          script = "color structure;";
+          break;
+        case "white":
+          script = "color white;";
+          break;
+      }
+      Jmol.script(window[myJmol], script);
+    }
+
+    function toggleHydrogens() {
+      Jmol.script(window[myJmol], "set showHydrogens toggle;");
+    }
+
+    function resetView() {
+      Jmol.script(window[myJmol], "reset;");
+    }
+
+    function spinToggle() {
+      Jmol.script(window[myJmol], "spin toggle;");
+    }
   </script>
 </head>
-
 <body>
   <div class="container">
+
+    <!-- Title -->
     <div class="viewers">
-      <h1>BInitial M_H_ROMe_deoT CONFORMERS</h1>
+      <h1>Initial M_G_ROMe_deoT CONFORMERS</h1>
     </div>
+
+    <!-- Viewer -->
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls">
+
+      <label>Representation</label>
+
+      <select onchange="setStyle(this.value)">
+        <option value="ball_stick">Ball &amp; Stick</option>
+        <option value="spacefill">Spacefill (CPK)</option>
+        <option value="stick">Stick</option>
+        <option value="wireframe">Wireframe</option>
+      </select>
+
+      <select onchange="setColor(this.value)">
+        <option value="cpk">Color CPK</option>
+        <option value="chain">Color Chain</option>
+        <option value="structure">Color Structure</option>
+        <option value="white">Color White</option>
+      </select>
+
+      <button onclick="toggleHydrogens()">Toggle H</button>
+      <button onclick="spinToggle()">Spin</button>
+      <button onclick="resetView()">Reset View</button>
+
     </div>
 
   </div>
 </body>
 </html>
-
-
-
-
-
-
-
-
-
-
-
-
-
