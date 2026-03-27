@@ -45,6 +45,46 @@
       width: 100%;
       margin-top: 20px;
     }
+    /* ── Frame animation panel ─────────────────────────────────────── */
+    .frame-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid #0077cc;
+      border-radius: 8px;
+      background-color: #f0f7ff;
+    }
+    .frame-controls label {
+      font-weight: bold;
+      flex-basis: 100%;
+      text-align: center;
+      color: #0077cc;
+      margin-bottom: 4px;
+    }
+    .frame-info {
+      font-size: 13px;
+      color: #444;
+      flex-basis: 100%;
+      text-align: center;
+    }
+    #frameSlider {
+      flex: 1 1 200px;
+      max-width: 400px;
+      accent-color: #0077cc;
+      cursor: pointer;
+    }
+    #frameSpeedSlider {
+      flex: 1 1 120px;
+      max-width: 220px;
+      accent-color: #0077cc;
+      cursor: pointer;
+    }
+    /* ── Shared button / select style ──────────────────────────────── */
     select, button {
       padding: 10px 15px;
       font-size: 14px;
@@ -74,9 +114,23 @@
   <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
   <script type="text/javascript">
     var myJmol = "myJmol";
+    var totalFrames = 1;
+    var isPlaying = false;
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
+      // Query total frame count once Jmol is ready
+      setTimeout(function () {
+        Jmol.evaluateVar(applet, "script('print _frameCount')", function (val) {
+          var n = parseInt(val);
+          if (!isNaN(n) && n > 0) {
+            totalFrames = n;
+            var slider = document.getElementById("frameSlider");
+            slider.max = n;
+            updateFrameInfo(1, n);
+          }
+        });
+      }, 800);
     };
 
     const style_script = `
@@ -85,50 +139,40 @@
       set perspectiveDepth off;
       wireframe off;
       spacefill off;
-
       # representación base
       select all;
       wireframe 0.05;
       color cpk;
-
       # MAN (65–90 en VMD → 66–91 en Jmol)
       select atomno >=66 and atomno <=91;
       wireframe 0.12;
       spacefill 0.28;
       color [0,150,255];
-
-
       # GLC (45–64 23 → 46–65 24)
       select (atomno >=46 and atomno <=65) or atomno=24;
       wireframe 0.06;
       color yellow;
-
       # RAP (0–22 → 1–23)
       select atomno >=1 and atomno <=23;
       wireframe 0.06;
       color red;
-
       # TAL (24–44 → 25–45)
       select atomno >=25 and atomno <=45;
       wireframe 0.06;
       color green;
-    
-      
+
       # H y O más pequeños
       select oxygen;
       spacefill 0.32;
       wireframe 0.08;
       color red;
-
       select hydrogen;
       spacefill 0.18;
       wireframe 0.05;
       color white;
-
       # recalcular conectividad
       connect delete;
       connect auto;
-
       # H bonds
       set hbondsAngleMinimum 60;
       set hbondsDistanceMaximum 3.0;
@@ -153,7 +197,76 @@
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
     });
 
+    // ── Frame helpers ────────────────────────────────────────────────────────
 
+    function updateFrameInfo(current, total) {
+      var el = document.getElementById("frameInfo");
+      if (el) el.textContent = "Frame " + current + " / " + total;
+    }
+
+    function goToFrame(n) {
+      Jmol.script(window[myJmol], "frame " + n + ";");
+      document.getElementById("frameSlider").value = n;
+      updateFrameInfo(n, totalFrames);
+    }
+
+    function framePrev() {
+      var s = document.getElementById("frameSlider");
+      var cur = parseInt(s.value) || 1;
+      var next = cur > 1 ? cur - 1 : totalFrames;
+      goToFrame(next);
+    }
+
+    function frameNext() {
+      var s = document.getElementById("frameSlider");
+      var cur = parseInt(s.value) || 1;
+      var next = cur < totalFrames ? cur + 1 : 1;
+      goToFrame(next);
+    }
+
+    function frameFirst() { goToFrame(1); }
+    function frameLast()  { goToFrame(totalFrames); }
+
+    function getSpeed() {
+      // slider 1–10 → delay in ms (1000 ms slow … 50 ms fast)
+      var v = parseInt(document.getElementById("frameSpeedSlider").value) || 5;
+      return Math.round(1050 - v * 100);
+    }
+
+    var playInterval = null;
+    function togglePlay() {
+      var btn = document.getElementById("btnPlay");
+      if (isPlaying) {
+        clearInterval(playInterval);
+        playInterval = null;
+        isPlaying = false;
+        btn.textContent = "▶ Play";
+      } else {
+        isPlaying = true;
+        btn.textContent = "⏸ Pause";
+        playInterval = setInterval(function () {
+          var s = document.getElementById("frameSlider");
+          var cur = parseInt(s.value) || 1;
+          var next = cur < totalFrames ? cur + 1 : 1;
+          goToFrame(next);
+        }, getSpeed());
+      }
+    }
+
+    // Update play speed on-the-fly when slider changes
+    function onSpeedChange() {
+      if (isPlaying) {
+        clearInterval(playInterval);
+        playInterval = setInterval(function () {
+          var s = document.getElementById("frameSlider");
+          var cur = parseInt(s.value) || 1;
+          var next = cur < totalFrames ? cur + 1 : 1;
+          goToFrame(next);
+        }, getSpeed());
+      }
+      var v = parseInt(document.getElementById("frameSpeedSlider").value) || 5;
+      document.getElementById("speedLabel").textContent = "Speed: " + v;
+    }
   </script>
 </head>
 <body>
@@ -168,6 +281,43 @@
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
     </div>
+
+    <!-- ── Frame animation controls ───────────────────────────────── -->
+    <div class="frame-controls">
+      <label>Frame Animation</label>
+
+      <span class="frame-info" id="frameInfo">Frame 1 / —</span>
+
+      <!-- Scrubber -->
+      <input
+        type="range"
+        id="frameSlider"
+        min="1"
+        max="1"
+        value="1"
+        oninput="goToFrame(parseInt(this.value))"
+      />
+
+      <!-- Step buttons -->
+      <button onclick="frameFirst()" title="First frame">⏮</button>
+      <button onclick="framePrev()"  title="Previous frame">◀</button>
+      <button id="btnPlay" onclick="togglePlay()">▶ Play</button>
+      <button onclick="frameNext()"  title="Next frame">▶</button>
+      <button onclick="frameLast()"  title="Last frame">⏭</button>
+
+      <!-- Speed -->
+      <span id="speedLabel" style="font-size:13px;color:#444;">Speed: 5</span>
+      <input
+        type="range"
+        id="frameSpeedSlider"
+        min="1"
+        max="10"
+        value="5"
+        oninput="onSpeedChange()"
+        title="Animation speed"
+      />
+    </div>
+
   </div>
 </body>
 </html>
