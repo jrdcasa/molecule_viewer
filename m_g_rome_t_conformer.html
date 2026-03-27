@@ -93,6 +93,10 @@
 
     const style_script = `
      background white;
+     set axes off;
+     set perspectiveDepth off;
+     wireframe off;
+     spacefill off;
     `
 
     var Info = {
@@ -101,7 +105,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/M_G_ROMe_deoT_crest_clustered.xyz"; wireframe on',
+      script: 'load "mol/M_G_ROMe_deoT_crest_clustered.xyz"; ${style_script}',
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
@@ -115,7 +119,7 @@
 <body>
   <div class="container">
     <div class="viewers">
-      <h1>Initial M_H_ROMe_deoT CONFORMERS</h1>
+      <h1>AInitial M_H_ROMe_deoT CONFORMERS</h1>
     </div>
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
