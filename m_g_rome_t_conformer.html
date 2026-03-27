@@ -85,9 +85,21 @@
       set perspectiveDepth off;
       wireframe off;
       spacefill off;
-      cpk off;
-      wireframe 0.15;
-      cpk 25%;
+
+      # representación base
+      select all;
+      wireframe 0.05;
+      color cpk;
+
+      # MAN (65–90 en VMD → 66–91 en Jmol)
+      select atomno >=66 and atomno <=91;
+      wireframe 0.12;
+      spacefill 0.28;
+      color [0,150,255];
+
+      
+      
+      
     `;
 
     var Info = {
