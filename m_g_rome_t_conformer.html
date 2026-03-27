@@ -91,13 +91,13 @@
       document.title = "Jmol Viewer";
     }
 
-    const style_script = '
+    const style_script = `
      background white;
      set axes off;
      set perspectiveDepth off;
      wireframe off;
      spacefill off;
-    ' 
+    ` 
 
     var Info = {
       width: "100%",
@@ -105,7 +105,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: 'load "mol/M_G_ROMe_deoT_crest_clustered.xyz"; ${style_script}',
+      script: `load "mol/M_G_ROMe_deoT_crest_clustered.xyz"; ${style_script}`,
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
