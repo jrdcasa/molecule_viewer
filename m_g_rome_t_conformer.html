@@ -112,22 +112,30 @@
       select atomno >=25 and atomno <=45;
       wireframe 0.06;
       color green;
+    
       
+      # H y O más pequeños
+      select oxygen;
+      spacefill 0.32;
+      wireframe 0.08;
+      color red;
+
       select hydrogen;
       spacefill 0.18;
       wireframe 0.05;
+      color white;
 
       # recalcular conectividad
       connect delete;
       connect auto;
 
       # H bonds
-      set hbondsAngleMinimum 30;
-      set hbondsDistanceMaximum 3.2;
+      set hbondsAngleMinimum 60;
+      set hbondsDistanceMaximum 3.0;
       calculate hbonds;
-      color hbonds red;
+      color hbonds black;
       set hbondsSolid false;
-      hbonds 0.12;
+      hbonds 0.25;
     `;
 
     var Info = {
