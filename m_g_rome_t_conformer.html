@@ -86,67 +86,10 @@
   <script type="text/javascript">
     const baseURL = "mol/";
     var myJmol = "myJmol";
-    var myJmol2 = "myJmol2";
-    var myJmol3 = "myJmol3";
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
     }
-
-    const style_script = `
-    background white;
-    set axes off;
-    set perspectiveDepth off;
-    wireframe off;
-    spacefill off;
-
-    # representación base
-    select all;
-    wireframe 0.05;
-    color cpk;
-
-    # MAN (65–90 en VMD → 66–91 en Jmol)
-    select atomno >=66 and atomno <=91;
-    wireframe 0.12;
-    spacefill 0.28;
-    color [0,150,255];
-
-    # GLC (45–64 23 → 46–65 24)
-    select (atomno >=46 and atomno <=65) or atomno=24;
-    wireframe 0.06;
-    color yellow;
-
-    # RAP (0–22 → 1–23)
-    select atomno >=1 and atomno <=23;
-    wireframe 0.06;
-    color red;
-
-    # TAL (24–44 → 25–45)
-    select atomno >=25 and atomno <=45;
-    wireframe 0.06;
-    color green;
-
-    # H y O más pequeños
-    select oxygen;
-    spacefill 0.32;
-    wireframe 0.08;
-
-    select hydrogen;
-    spacefill 0.18;
-    wireframe 0.05;
-
-    # recalcular conectividad
-    connect delete;
-    connect auto;
-
-    # H bonds
-    set hbondsAngleMinimum 30;
-    set hbondsDistanceMaximum 3.2;
-    calculate hbonds;
-    color hbonds red;
-    set hbondsSolid false;
-    hbonds 0.12;
-`;
 
     var Info = {
       width: "100%",
