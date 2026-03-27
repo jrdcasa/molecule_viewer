@@ -231,7 +231,7 @@
     function goToFrame(n) {
       if (!appletRef) return;
       n = Math.max(1, Math.min(n, totalFrames));
-      Jmol.script(appletRef, "frame " + n + ";");
+      Jmol.script(appletRef, "frame " + n + "; set hbondsAngleMinimum 60; set hbondsDistanceMaximum 3.0; calculate hbonds; color hbonds black; set hbondsSolid false; hbonds 0.25;");
       currentFrame = n;
       document.getElementById("frameSlider").value = n;
       document.getElementById("frameInfo").textContent =
