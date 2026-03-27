@@ -116,18 +116,18 @@
     var myJmol = "myJmol";
     var totalFrames = 1;
     var isPlaying = false;
+    var jmolApplet1 = null;
 
     jmol_isReady = function (applet) {
       document.title = "Jmol Viewer";
       // Query total frame count once Jmol is ready
       setTimeout(function () {
-        Jmol.evaluateVar(applet, "script('print _frameCount')", function (val) {
-          var n = parseInt(val);
-          if (!isNaN(n) && n > 0) {
-            totalFrames = n;
+        Jmol.getPropertyAsJavaObject(applet, "modelInfo", function(info) {
+          if(info && info.modelCount){
+            totalFrames = info.modelCount;
             var slider = document.getElementById("frameSlider");
-            slider.max = n;
-            updateFrameInfo(1, n);
+            slider.max = totalFrames;
+            updateFrameInfo(1,totalFrames);
           }
         });
       }, 800);
@@ -194,7 +194,12 @@
     };
 
     document.addEventListener("DOMContentLoaded", function () {
-      document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
+
+        jmolApplet1 = Jmol.getApplet(myJmol, Info);  
+
+        document.getElementById("jmol_div1").innerHTML =
+        Jmol.getAppletHtml(jmolApplet1);
+
     });
 
     // ── Frame helpers ────────────────────────────────────────────────────────
@@ -205,7 +210,8 @@
     }
 
     function goToFrame(n) {
-      Jmol.script(window[myJmol], "frame " + n + ";");
+      if (!jmolApplet1) return;
+      Jmol.script(jmolApplet1, "frame " + n + ";");
       document.getElementById("frameSlider").value = n;
       updateFrameInfo(n, totalFrames);
     }
