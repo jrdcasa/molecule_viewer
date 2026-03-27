@@ -105,57 +105,7 @@
       document.getElementById("jmol_div1").innerHTML = Jmol.getAppletHtml(myJmol, Info);
     });
 
-    // ── Control functions ──────────────────────────────────────────────────────
 
-    function setStyle(style) {
-      var script = "";
-      switch (style) {
-        case "ball_stick":
-          script = "wireframe 0.15; cpk 25%;";
-          break;
-        case "spacefill":
-          script = "wireframe off; cpk on;";
-          break;
-        case "wireframe":
-          script = "wireframe 0.1; cpk off;";
-          break;
-        case "stick":
-          script = "wireframe 0.2; cpk off;";
-          break;
-      }
-      Jmol.script(window[myJmol], script);
-    }
-
-    function setColor(scheme) {
-      var script = "";
-      switch (scheme) {
-        case "cpk":
-          script = "color cpk;";
-          break;
-        case "chain":
-          script = "color chain;";
-          break;
-        case "structure":
-          script = "color structure;";
-          break;
-        case "white":
-          script = "color white;";
-          break;
-      }
-      Jmol.script(window[myJmol], script);
-    }
-
-    function toggleHydrogens() {
-      Jmol.script(window[myJmol], "set showHydrogens toggle;");
-    }
-
-    function resetView() {
-      Jmol.script(window[myJmol], "reset;");
-    }
-
-    function spinToggle() {
-      Jmol.script(window[myJmol], "spin toggle;");
-    }
   </script>
 </head>
 <body>
@@ -163,39 +113,13 @@
 
     <!-- Title -->
     <div class="viewers">
-      <h1>Initial M_G_ROMe_deoT CONFORMERS</h1>
+      <h1>Initiallll M_G_ROMe_deoT CONFORMERS</h1>
     </div>
 
     <!-- Viewer -->
     <div class="viewers">
       <div class="jmol-wrapper" id="jmol_div1"></div>
     </div>
-
-    <!-- Controls -->
-    <div class="controls">
-
-      <label>Representation</label>
-
-      <select onchange="setStyle(this.value)">
-        <option value="ball_stick">Ball &amp; Stick</option>
-        <option value="spacefill">Spacefill (CPK)</option>
-        <option value="stick">Stick</option>
-        <option value="wireframe">Wireframe</option>
-      </select>
-
-      <select onchange="setColor(this.value)">
-        <option value="cpk">Color CPK</option>
-        <option value="chain">Color Chain</option>
-        <option value="structure">Color Structure</option>
-        <option value="white">Color White</option>
-      </select>
-
-      <button onclick="toggleHydrogens()">Toggle H</button>
-      <button onclick="spinToggle()">Spin</button>
-      <button onclick="resetView()">Reset View</button>
-
-    </div>
-
   </div>
 </body>
 </html>
