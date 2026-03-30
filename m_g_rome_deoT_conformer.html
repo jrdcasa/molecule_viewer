@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dual Molecular Viewer</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .container {
+      width: 100%;
+      max-width: 1400px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .viewers {
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: center;
+      gap: 20px;
+      width: 100%;
+    }
+    .jmol-wrapper {
+      width: 75%;
+      aspect-ratio: 1 / 1;
+      border: 2px solid #0077cc;
+      background-color: #fff;
+    }
+    .legend {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 14px;
+      padding: 16px 20px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      background-color: #fafafa;
+      min-width: 130px;
+      align-self: center;
+    }
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #333;
+    }
+    .legend-dot {
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.15);
+    }
+    .frame-controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      align-items: center;
+      width: 75%;
+      margin-top: 16px;
+      padding: 14px 16px;
+      border: 1px solid #0077cc;
+      border-radius: 8px;
+      background-color: #f0f7ff;
+    }
+    .frame-controls > label {
+      font-weight: bold;
+      flex-basis: 100%;
+      text-align: center;
+      color: #0077cc;
+    }
+    .frame-info {
+      font-size: 13px;
+      color: #444;
+      flex-basis: 100%;
+      text-align: center;
+    }
+    #frameSlider {
+      flex: 1 1 300px;
+      max-width: 500px;
+      accent-color: #0077cc;
+      cursor: pointer;
+    }
+    #frameSpeedSlider {
+      flex: 1 1 120px;
+      max-width: 200px;
+      accent-color: #0077cc;
+      cursor: pointer;
+    }
+    .frame-btn {
+      padding: 8px 14px;
+      font-size: 15px;
+      border: 1px solid #0077cc;
+      border-radius: 5px;
+      background-color: #ffffff;
+      color: #0077cc;
+      cursor: pointer;
+      transition: background-color 0.2s;
+      flex: 0 0 auto;
+    }
+    .frame-btn:hover { background-color: #d0e8ff; }
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-basis: 100%;
+      justify-content: center;
+      font-size: 13px;
+      color: #444;
+    }
+    select, button {
+      padding: 10px 15px;
+      font-size: 14px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      background-color: #ffffff;
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      flex: 1 1 150px;
+      max-width: 200px;
+    }
+    button:hover, select:hover { background-color: #e6f0ff; }
+    label {
+      font-weight: bold;
+      flex-basis: 100%;
+      text-align: center;
+    }
+    @media (max-width: 500px) {
+      select, button { font-size: 13px; padding: 8px 12px; }
+    }
+  </style>
+
+  <script type="text/javascript" src="jsmol/JSmol.min.js"></script>
+  <script type="text/javascript">
+
+    // ── CLAVE: guardar la referencia real del applet aquí ──────────────────
+    var appletRef    = null;   // se asigna en DOMContentLoaded
+    var totalFrames  = 1;
+    var currentFrame = 1;
+    var isPlaying    = false;
+    var playInterval = null;
+
+    // ── JSmol llama a esta función cuando el applet está listo ─────────────
+    jmol_isReady = function (applet) {
+      document.title = "Jmol Viewer";
+      // applet aquí ES el objeto real; guardarlo
+      appletRef = applet;
+      // Esperar a que el load script termine antes de leer frames
+      setTimeout(readFrameCount, 1500);
+    };
+
+    const style_script = `
+      background white;
+      set axes off;
+      set perspectiveDepth off;
+      wireframe off;
+      spacefill off;
+      select all;
+      wireframe 0.05;
+      color cpk;
+      select atomno >=67 and atomno <=89;
+      wireframe 0.06;
+      color cyan;
+      select (atomno >=47 and atomno <=66) or atomno=24;
+      wireframe 0.06;
+      color yellow;
+      select atomno >=1 and atomno <=23;
+      wireframe 0.06;
+      color red;
+      select atomno >=25 and atomno <=46;
+      wireframe 0.14;
+      color blue;
+      select oxygen;
+      spacefill 0.32;
+      wireframe 0.08;
+      color red;
+      select hydrogen;
+      spacefill 0.18;
+      wireframe 0.05;
+      color white;
+      connect delete;
+      connect auto;
+      set hbondsAngleMinimum 60;
+      set hbondsDistanceMaximum 3.0;
+      calculate hbonds;
+      color hbonds black;
+      set hbondsSolid false;
+      hbonds 0.25;
+    `;
+
+    var Info = {
+      width: "100%",
+      height: "100%",
+      color: "#ffffff",
+      use: "HTML5",
+      j2sPath: "jsmol/j2s",
+      script: `load "mol/M_G_ROMe_T_crest_clustered.xyz"; ${style_script}`,
+      readyFunction: jmol_isReady,
+      disableJ2SLoadMonitor: true,
+    };
+
+    document.addEventListener("DOMContentLoaded", function () {
+      // Jmol.getAppletHtml devuelve HTML pero también registra el applet.
+      // La referencia real llega por readyFunction → appletRef.
+      document.getElementById("jmol_div1").innerHTML =
+        Jmol.getAppletHtml("myJmol", Info);
+    });
+
+    // ── Leer número total de frames ────────────────────────────────────────
+    function readFrameCount() {
+      if (!appletRef) {
+        setTimeout(readFrameCount, 500);
+        return;
+      }
+      try {
+        var info = Jmol.getPropertyAsArray(appletRef, "modelInfo", "");
+        if (info && info.modelCount && info.modelCount > 0) {
+          initSlider(info.modelCount);
+          return;
+        }
+      } catch(e) {}
+      try {
+        var json = Jmol.getPropertyAsJSON(appletRef, "modelInfo", "");
+        var obj  = JSON.parse(json);
+        if (obj && obj.modelCount && obj.modelCount > 0) {
+          initSlider(obj.modelCount);
+          return;
+        }
+      } catch(e) {}
+      // Fallback conservador
+      console.warn("No se pudo detectar frameCount; usando 50 como máximo.");
+      initSlider(50);
+    }
+
+    function initSlider(n) {
+      totalFrames = n;
+      var s = document.getElementById("frameSlider");
+      s.max   = n;
+      s.value = 1;
+      currentFrame = 1;
+      document.getElementById("frameInfo").textContent = "Frame 1 / " + n;
+    }
+
+    // ── Script de H-bonds (se repite tras cada cambio de frame) ───────────
+    const hbond_script = `
+      set hbondsAngleMinimum 60;
+      set hbondsDistanceMaximum 3.0;
+      calculate hbonds;
+      color hbonds black;
+      set hbondsSolid false;
+      hbonds 0.25;
+    `;
+
+    // ── Navegar a un frame concreto ────────────────────────────────────────
+    function goToFrame(n) {
+      if (!appletRef) return;
+      n = Math.max(1, Math.min(n, totalFrames));
+      // Cambiar frame y recalcular H-bonds en un solo script
+      Jmol.script(appletRef, "frame " + n + "; " + hbond_script);
+      currentFrame = n;
+      document.getElementById("frameSlider").value = n;
+      document.getElementById("frameInfo").textContent =
+        "Frame " + n + " / " + totalFrames;
+    }
+
+    function frameFirst() { goToFrame(1); }
+    function frameLast()  { goToFrame(totalFrames); }
+    function framePrev()  { goToFrame(currentFrame > 1 ? currentFrame - 1 : totalFrames); }
+    function frameNext()  { goToFrame(currentFrame < totalFrames ? currentFrame + 1 : 1); }
+
+    // ── Play / Pause ───────────────────────────────────────────────────────
+    function getDelay() {
+      var v = parseInt(document.getElementById("frameSpeedSlider").value) || 5;
+      return Math.round(1050 - v * 100);   // speed 1→950ms, 10→50ms
+    }
+
+    function startPlay() {
+      isPlaying = true;
+      document.getElementById("btnPlay").textContent = "⏸ Pause";
+      playInterval = setInterval(function () {
+        goToFrame(currentFrame < totalFrames ? currentFrame + 1 : 1);
+      }, getDelay());
+    }
+
+    function stopPlay() {
+      isPlaying = false;
+      clearInterval(playInterval);
+      playInterval = null;
+      document.getElementById("btnPlay").textContent = "▶ Play";
+    }
+
+    function togglePlay() {
+      if (isPlaying) { stopPlay(); } else { startPlay(); }
+    }
+
+    function onSpeedChange() {
+      var v = parseInt(document.getElementById("frameSpeedSlider").value) || 5;
+      document.getElementById("speedVal").textContent = v;
+      if (isPlaying) { stopPlay(); startPlay(); }
+    }
+
+  </script>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Título -->
+    <div class="viewers">
+      <h1>Initial M_G_ROMe_deoT CONFORMERS</h1>
+    </div>
+
+    <!-- Visor + Leyenda -->
+    <div class="viewers" style="align-items: center;">
+      <div class="jmol-wrapper" id="jmol_div1"></div>
+      <div class="legend">
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(0,255,255);"></div>
+          <span>Manose</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(255,255,0);"></div>
+          <span>Glucose</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(255,0,0);"></div>
+          <span>RAP</span>
+        </div>
+        <div class="legend-item">
+          <div class="legend-dot" style="background-color: rgb(0,0,255);"></div>
+          <span>TAL</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controles de frame -->
+    <div class="frame-controls">
+      <label>Frame Animation</label>
+
+      <span class="frame-info" id="frameInfo">Frame 1 / —</span>
+
+      <!-- Scrubber -->
+      <input
+        type="range"
+        id="frameSlider"
+        min="1" max="1" value="1"
+        oninput="goToFrame(parseInt(this.value))"
+      />
+
+      <!-- Botones de navegación -->
+      <button class="frame-btn" onclick="frameFirst()" title="Primer frame">⏮</button>
+      <button class="frame-btn" onclick="framePrev()"  title="Frame anterior">◀</button>
+      <button class="frame-btn" id="btnPlay" onclick="togglePlay()">▶ Play</button>
+      <button class="frame-btn" onclick="frameNext()"  title="Frame siguiente">▶</button>
+      <button class="frame-btn" onclick="frameLast()"  title="Último frame">⏭</button>
+
+      <!-- Velocidad -->
+      <div class="speed-row">
+        <span>Lento</span>
+        <input
+          type="range"
+          id="frameSpeedSlider"
+          min="1" max="10" value="5"
+          oninput="onSpeedChange()"
+          title="Velocidad de animación"
+        />
+        <span>Rápido</span>
+        <span style="margin-left:8px;">(<span id="speedVal">5</span>)</span>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>
