@@ -170,16 +170,16 @@
       select all;
       wireframe 0.05;
       color cpk;
-      select atomno >=67 and atomno <=89;
+      select atomno >=66 and atomno <=91;
       wireframe 0.06;
       color cyan;
-      select (atomno >=47 and atomno <=66) or atomno=24;
+      select (atomno >=46 and atomno <=65) or atomno=24;
       wireframe 0.06;
       color yellow;
       select atomno >=1 and atomno <=23;
       wireframe 0.06;
       color red;
-      select atomno >=25 and atomno <=46;
+      select atomno >=25 and atomno <=45;
       wireframe 0.14;
       color blue;
       select oxygen;
@@ -206,7 +206,7 @@
       color: "#ffffff",
       use: "HTML5",
       j2sPath: "jsmol/j2s",
-      script: `load "mol/M_G_ROMe_T_crest_clustered.xyz"; ${style_script}`,
+      script: `load "mol/M_G_ROMe_deoT_crest_clustered.xyz"; ${style_script}`,
       readyFunction: jmol_isReady,
       disableJ2SLoadMonitor: true,
     };
